@@ -1,3 +1,4 @@
+import asyncio
 from asyncore import loop
 from os import system
 import datetime
@@ -17,6 +18,23 @@ dp = Dispatcher(bot, loop=loop)
 
 async def send_hello(dp):
     await bot.send_message(chat_id=chat_id, text='Здравствуйте! Нажмите /menu, чтобы начать работу бота')
+
+@dp.message_handler(Command('quiz'))
+async def quiz(message: Message):
+    await bot.send_message(chat_id=chat_id, text='Добро пожаловать в режим викторины!')
+    await bot.send_message(chat_id=chat_id,
+                           text='На данный момент доступны 3 викторины:')
+    await bot.send_message(chat_id=chat_id,
+                           text='№1 - Викторина на эрудицию. Нажмите /start, чтобы начать игру')
+    await bot.send_message(chat_id=chat_id,
+                           text='№2 - Викторина 2. Нажмите /start_2, чтобы начать игру')
+    await bot.send_message(chat_id=chat_id,
+                           text='№3 - Викторина 3. Нажмите /start_3, чтобы начать игру')
+
+    """Переход в режим викторины"""
+
+    # Запускаем викторину в отдельном процессе
+    system('python quiz.py')
 
 
 @dp.message_handler(Command('menu'))

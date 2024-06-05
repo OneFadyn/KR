@@ -14,6 +14,8 @@ from keyboards import mainMenuKeyboard, scheduleMenuKeyboard
 # Создаем цикл событий
 loop = asyncio.new_event_loop()
 
+
+
 bot = Bot(BOT_TOKEN, parse_mode='HTML')
 
 dp = Dispatcher(bot, loop=loop)
@@ -28,6 +30,7 @@ async def start_chatbot(message: Message):
 
     # Запускаем чат-бота в отдельном процессе
     system('python chatbot.py')
+
 
 
 async def send_everyday_message():
