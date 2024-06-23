@@ -26,11 +26,11 @@ mainMenuKeyboard = ReplyKeyboardMarkup(
 scheduleMenuKeyboard = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text='Расписание на день'),
+            KeyboardButton(text='Расписание на сегодня'),
             KeyboardButton(text='Расписание на неделю')
         ],
         [
-            KeyboardButton(text='Расписание на месяц'),
+            KeyboardButton(text='Расписание на завтра'),
             KeyboardButton(text='Расписание сессии')
         ],
         [
@@ -40,8 +40,21 @@ scheduleMenuKeyboard = ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
-#todayMenuKeyboard =
-
+otherMenuKeyboard = ReplyKeyboardMarkup(
+    keyboard=[
+        [
+            KeyboardButton(text='Рекомендации по организации учебного процесса')
+        ],
+        [
+            KeyboardButton(text='Рекомендация литературы'),
+            KeyboardButton(text='Анонс мероприятий'),
+        ],
+        [
+            KeyboardButton(text='Викторины')
+        ]
+    ],
+    resize_keyboard=True
+)
 
 
 

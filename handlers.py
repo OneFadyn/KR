@@ -6,8 +6,7 @@ import datetime
 from aiogram import Dispatcher, Bot
 from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery, update
 from aiogram.dispatcher.filters import Text, Command
-from keyboards import mainMenuKeyboard, scheduleMenuKeyboard
-
+from keyboards import mainMenuKeyboard, scheduleMenuKeyboard, otherMenuKeyboard
 
 from config import chat_id, BOT_TOKEN
 
@@ -21,7 +20,7 @@ async def send_hello(dp):
 
 @dp.message_handler(Command('quiz'))
 async def quiz(message: Message):
-    await bot.send_message(chat_id=chat_id, text='Добро пожаловать в режим викторины!')
+    """await bot.send_message(chat_id=chat_id, text='Добро пожаловать в режим викторины!', reply_markup=ReplyKeyboardRemove())
     await bot.send_message(chat_id=chat_id,
                            text='На данный момент доступны 3 викторины:')
     await bot.send_message(chat_id=chat_id,
@@ -30,7 +29,7 @@ async def quiz(message: Message):
                            text='№2 - Викторина 2. Нажмите /start_2, чтобы начать игру')
     await bot.send_message(chat_id=chat_id,
                            text='№3 - Викторина 3. Нажмите /start_3, чтобы начать игру')
-
+"""
     """Переход в режим викторины"""
 
     # Запускаем викторину в отдельном процессе
@@ -39,7 +38,7 @@ async def quiz(message: Message):
 
 @dp.message_handler(Command('menu'))
 async def show_menu(message: Message):
-    await message.answer('Menu', reply_markup=mainMenuKeyboard)
+    await message.answer('Главное меню', reply_markup=mainMenuKeyboard)
 
 
 # Переход на уровень расписания
@@ -51,8 +50,9 @@ async def schedule_menu(message: Message):
     await bot.send_message(message.chat.id, 'Выберите нужный раздел', reply_markup=scheduleMenuKeyboard)
 
 
-@dp.message_handler(Text(equals=['Расписание на день']))
-async def schedule_for_day(message: Message):
+# handlers для блока меню с расписаниями
+@dp.message_handler(Text(equals=['Расписание на сегодня']))
+async def schedule_for_today(message: Message):
     current_day = datetime.datetime.today().weekday()  # Получаем номер текущего дня недели (0 - понедельник, 1 - вторник и т.д.)
     days_of_week = ['понедельник', 'вторник', 'среду', 'четверг', 'пятницу', 'субботу', 'воскресенье']
     day_filename = days_of_week[current_day] + '.png'  # Формируем имя файла на основе текущего дня недели
@@ -65,6 +65,36 @@ async def schedule_for_day(message: Message):
 
     await message.answer('Menu', reply_markup=mainMenuKeyboard)
 
+async def get_schedule_for_today():
+    current_day = datetime.datetime.today().weekday()  # Получаем номер текущего дня недели (0 - понедельник, 1 - вторник и т.д.)
+    days_of_week = ['понедельник', 'вторник', 'среду', 'четверг', 'пятницу', 'субботу', 'воскресенье']
+    day_filename = days_of_week[current_day] + '.png'  # Формируем имя файла на основе текущего дня недели
+
+    schedule_text = f"Расписание на {days_of_week[current_day]}\n"
+    with open(f'data/{day_filename}', 'rb') as photo:
+        photo_data = photo.read()
+
+    return photo_data
+async def get_deadlines():
+    deadlines_text = "Ближайшие дедлайны:\n"
+    with open('data/deadlines.txt', 'r', encoding='utf-8') as file:
+        deadlines_text += file.read()
+    return deadlines_text
+
+
+@dp.message_handler(Text(equals=['Расписание на завтра']))
+async def schedule_for_tomorrow(message: Message):
+    current_day = datetime.datetime.today().weekday()  # Получаем номер текущего дня недели (0 - понедельник, 1 - вторник и т.д.)
+    days_of_week = ['понедельник', 'вторник', 'среду', 'четверг', 'пятницу', 'субботу', 'воскресенье']
+    day_filename = days_of_week[current_day+1] + '.png'  # Формируем имя файла на основе текущего дня недели
+
+    await bot.send_message(chat_id=message.chat.id, text=f"Расписание на завтра (на {days_of_week[current_day+1]})",
+                           reply_markup=ReplyKeyboardRemove())  # Удаление предыдущей клавиатуры
+
+    with open(f'data/{day_filename}', 'rb') as photo:
+        await bot.send_photo(chat_id=message.chat.id, photo=photo.read())
+
+    await message.answer('Menu', reply_markup=mainMenuKeyboard)
 
 
 
@@ -95,7 +125,6 @@ async def literature(message: Message):
 
 
 # Помощник
-
 @dp.message_handler(Text(equals=['Помощник']))
 async def helper_start(message: Message):
     await bot.send_message(chat_id=message.chat.id, text='Переход в режим помощника... Для выхода из режима помощника '
@@ -116,11 +145,66 @@ async def news(message: Message):
         text = f.read()
     await bot.send_message(chat_id=message.chat.id, text=text, reply_markup=ReplyKeyboardRemove())
 
+async def get_news():
+    news_text = "Важные новости:\n"
+    with open('data/news.txt', 'r', encoding='utf-8') as file:
+        news_text += file.read()
+    return news_text
+
 @dp.message_handler(Text(equals=['Сроки сдачи работ']))
 async def deadlines(message: Message):
     await bot.send_message(chat_id=message.chat.id, text="Новости",
                            reply_markup=ReplyKeyboardRemove())  # удаление предыдущей клавиатуры
     with open('data/deadlines.txt', 'r', encoding='utf-8') as f:
+        text = f.read()
+    await bot.send_message(chat_id=message.chat.id, text=text, reply_markup=ReplyKeyboardRemove())
+
+
+@dp.message_handler(Text(equals=['Другое']))
+async def other(message: Message):
+    await bot.send_message(message.chat.id, 'Выберите нужный раздел', reply_markup=otherMenuKeyboard)
+
+
+# handlers для блока меню "Другое"
+@dp.message_handler(Text(equals=['Викторины']))
+async def quiz(message: Message):
+    await bot.send_message(chat_id=chat_id, text='Добро пожаловать в режим викторины!', reply_markup=ReplyKeyboardRemove())
+    await bot.send_message(chat_id=chat_id,
+                           text='На данный момент доступны 3 викторины:')
+    await bot.send_message(chat_id=chat_id,
+                           text='№1 - Викторина на эрудицию. Нажмите /start_1, чтобы начать игру')
+    await bot.send_message(chat_id=chat_id,
+                           text='№2 - Викторина на знание физики. Нажмите /start_2, чтобы начать игру')
+    await bot.send_message(chat_id=chat_id,
+                           text='№3 - Викторина по программированию. Нажмите /start_3, чтобы начать игру')
+
+    """Переход в режим викторины"""
+
+    # Запускаем викторину в отдельном процессе
+    system('python quiz.py')
+
+
+@dp.message_handler(Text(equals=['Рекомендации по организации учебного процесса']))
+async def rec(message: Message):
+    await bot.send_message(chat_id=message.chat.id, text="Рекомендации по организации учебного процесса",
+                           reply_markup=ReplyKeyboardRemove())  # удаление предыдущей клавиатуры
+    # можно предложить сайты или уже готовую информацию
+
+@dp.message_handler(Text(equals=['Рекомендация литературы']))
+async def rec_lit(message: Message):
+    await bot.send_message(chat_id=message.chat.id, text="Рекомендуемая литература",
+                           reply_markup=ReplyKeyboardRemove())  # удаление предыдущей клавиатуры
+    with open('data/rec_lit.txt', 'r', encoding='utf-8') as f:
+        text = f.read()
+    await bot.send_message(chat_id=message.chat.id, text=text, reply_markup=ReplyKeyboardRemove())
+
+    # можно разделы сделать
+
+@dp.message_handler(Text(equals=['Анонс мероприятий']))
+async def events(message: Message):
+    await bot.send_message(chat_id=message.chat.id, text="Анонс мероприятий",
+                           reply_markup=ReplyKeyboardRemove())  # удаление предыдущей клавиатуры
+    with open('data/events.txt', 'r', encoding='utf-8') as f:
         text = f.read()
     await bot.send_message(chat_id=message.chat.id, text=text, reply_markup=ReplyKeyboardRemove())
 

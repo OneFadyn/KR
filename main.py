@@ -22,7 +22,7 @@ dp = Dispatcher(bot, loop=loop)
 
 @dp.message_handler(Command('menu'))
 async def show_menu(message: Message):
-    await message.answer('Menu', reply_markup=mainMenuKeyboard)
+    await message.answer('Главное меню', reply_markup=mainMenuKeyboard)
 
 @dp.message_handler(Command('startchat'))
 async def start_chatbot(message: Message):
@@ -32,14 +32,16 @@ async def start_chatbot(message: Message):
     system('python chatbot.py')
 
 
-
 async def send_everyday_message():
     while True:
-        moscow_time = datetime.utcnow() + timedelta(hours=3)  # Получение текущего времени в Москве
+        moscow_time = datetime.utcnow() + timedelta(hours=3)
 
-        # Проверяем, равно ли время 12:13
-        if moscow_time.hour == 18 and moscow_time.minute == 34:
-            await bot.send_message(chat_id, "123")
+        if moscow_time.hour == 8 and moscow_time.minute == 00:
+            schedule_photo = await get_schedule_for_today()
+            deadlines_text = await get_deadlines()
+            news_text = await get_news()
+
+            await bot.send_photo(chat_id, schedule_photo, caption=f"{deadlines_text}\n\n{news_text}")
 
         # Ожидаем одну минуту перед следующей проверкой
         await asyncio.sleep(60)
@@ -53,6 +55,8 @@ if __name__ == '__main__':
     loop = asyncio.get_event_loop()
     loop.create_task(main())
 
-    from handlers import send_hello, dp
+    from handlers import send_hello, dp, schedule_for_today, deadlines, news, get_schedule_for_today, get_deadlines, \
+    get_news
+
     print("Бот запущен...")
     executor.start_polling(dp)
