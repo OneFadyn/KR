@@ -20,17 +20,6 @@ async def send_hello(dp):
 
 @dp.message_handler(Command('quiz'))
 async def quiz(message: Message):
-    """await bot.send_message(chat_id=chat_id, text='Добро пожаловать в режим викторины!', reply_markup=ReplyKeyboardRemove())
-    await bot.send_message(chat_id=chat_id,
-                           text='На данный момент доступны 3 викторины:')
-    await bot.send_message(chat_id=chat_id,
-                           text='№1 - Викторина на эрудицию. Нажмите /start, чтобы начать игру')
-    await bot.send_message(chat_id=chat_id,
-                           text='№2 - Викторина 2. Нажмите /start_2, чтобы начать игру')
-    await bot.send_message(chat_id=chat_id,
-                           text='№3 - Викторина 3. Нажмите /start_3, чтобы начать игру')
-"""
-    """Переход в режим викторины"""
 
     # Запускаем викторину в отдельном процессе
     system('python quiz.py')
@@ -65,6 +54,7 @@ async def schedule_for_today(message: Message):
 
     await message.answer('Menu', reply_markup=mainMenuKeyboard)
 
+
 async def get_schedule_for_today():
     current_day = datetime.datetime.today().weekday()  # Получаем номер текущего дня недели (0 - понедельник, 1 - вторник и т.д.)
     days_of_week = ['понедельник', 'вторник', 'среду', 'четверг', 'пятницу', 'субботу', 'воскресенье']
@@ -75,6 +65,13 @@ async def get_schedule_for_today():
         photo_data = photo.read()
 
     return photo_data
+
+async def get_news():
+    news_text = "Важные новости:\n"
+    with open('data/news.txt', 'r', encoding='utf-8') as file:
+        news_text += file.read()
+    return news_text
+
 async def get_deadlines():
     deadlines_text = "Ближайшие дедлайны:\n"
     with open('data/deadlines.txt', 'r', encoding='utf-8') as file:
@@ -145,11 +142,7 @@ async def news(message: Message):
         text = f.read()
     await bot.send_message(chat_id=message.chat.id, text=text, reply_markup=ReplyKeyboardRemove())
 
-async def get_news():
-    news_text = "Важные новости:\n"
-    with open('data/news.txt', 'r', encoding='utf-8') as file:
-        news_text += file.read()
-    return news_text
+
 
 @dp.message_handler(Text(equals=['Сроки сдачи работ']))
 async def deadlines(message: Message):
@@ -188,7 +181,6 @@ async def quiz(message: Message):
 async def rec(message: Message):
     await bot.send_message(chat_id=message.chat.id, text="Рекомендации по организации учебного процесса",
                            reply_markup=ReplyKeyboardRemove())  # удаление предыдущей клавиатуры
-    # можно предложить сайты или уже готовую информацию
 
 @dp.message_handler(Text(equals=['Рекомендация литературы']))
 async def rec_lit(message: Message):
@@ -198,7 +190,6 @@ async def rec_lit(message: Message):
         text = f.read()
     await bot.send_message(chat_id=message.chat.id, text=text, reply_markup=ReplyKeyboardRemove())
 
-    # можно разделы сделать
 
 @dp.message_handler(Text(equals=['Анонс мероприятий']))
 async def events(message: Message):
@@ -208,10 +199,4 @@ async def events(message: Message):
         text = f.read()
     await bot.send_message(chat_id=message.chat.id, text=text, reply_markup=ReplyKeyboardRemove())
 
-'''
-функция эхо ответы
-@dp.message_handler()
-async def send_answer(message: Message):
-    text = message.text
-    await message.answer(text=text)
-'''
+

@@ -1,15 +1,8 @@
-Алгебра
+Алгоритмы:
 
-1.
-2.
-
-Геометрия
-
-1.
-2.
-3.
-
-Дифференциальные уравнения
-
-1.
-2.
+— Совершенный алгоритм. Жадные алгоритмы и динамическое программирование | Тим Рафгарден
+Ссылка: https://drive.google.com/file/d/10NpGWsgDHMPwXj-SFHfF9D9HCBqeXe3p/view?usp=drive_link
+— Совершенный алгоритм. Алгоритмы для NP-трудных задач | Тим Рафгарден
+Ссылка: https://drive.google.com/file/d/1o0cwr26P_HoOGqcewCi4H63qy2B0UTuc/view?usp=drive_link
+— Введение в теорию алгоритмов и структур данных | Максим Бабенко, Михаил Левин
+Ссылка: https://drive.google.com/file/d/15xwXlb0LpZzywftpD0T3gAsUnTbdDMRv/view?usp=drive_link
